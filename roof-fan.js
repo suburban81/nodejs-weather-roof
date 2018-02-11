@@ -1,12 +1,13 @@
+const telldus = require('telldus');
 const https = require('https');
- 
+
 https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/15.7416/lat/56.1223/data.json', (resp) => {
   let data = '';
- 
+
   resp.on('data', (chunk) => {
     data += chunk;
   });
- 
+
   resp.on('end', () => {
     console.log('--- About to run: ' + new Date().toISOString() + ' ---');
     let json = JSON.parse(data);
@@ -15,34 +16,16 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
     let temp = getVal(now, 't');
     let strength = getVal(now, 'ws');
     let direction = getVal(now, 'wd');
+    let roofTemp = extractRoofTemp(temp);
 
-    if (temp < 0.5) {
+    if (roofTemp < 0.5 || (!roofTemp && temp < 2)) {
         console.log('Decision: To cold - allow no fan');
-        // stop all fan
-    } else if (strength < 4) {
-        console.log('Decision: No wind - allow all fan');
-        // start all fan
-    } else if (direction > 330 || direction < 45) {
-        console.log('Decision: N or NO - allow all fan'); 
-        // start all fan
-    } else if (direction >= 45 && direction <= 210) {
-        console.log('Decision: East - allow north fan'); 
-        // start N fan
-    } else if (direction > 210 && direction < 240) {
-        console.log('Pure SW');
-        if (strength < 10) {
-            console.log('Decision: Soft SW - allow all fan');
-            // start all fan
-        } else if (direction <= 225) {
-            console.log('Decision: Strong S/SW - allow N fan');
-            // start N fan
-        } else if (direction > 225) {
-            console.log('Decision: Strong SW/W - allow S fan');
-            // start S fan
-        }
-    } else if (direction >= 240 && direction <= 330) {
-        console.log('Decision: West - allow south fan'); 
-        // start S fan
+    } else if (direction >= 0 && direction < 225) {
+        console.log('Decision: N, NO, O, SO, S - allow NV fan');
+        startNV();
+    } else if (direction <= 225) {
+        console.log('Decision: SV, V, NV  - allow SO fan');
+        startSO();
     } else {
         console.log('Error: fail to make decision');
         console.log('response: %j', json);
@@ -60,4 +43,42 @@ var getVal = function (parameters, name) {
     }).values[0];
     console.log('Current ' + name + ': %j', val);
     return val;
+}
+
+var extractRoofTemp = function () {
+    let sensors = telldus.getSensorsSync();
+    for (let index = 0; index < sensors.length; index++) {
+        if (sensors[index].id === 104) {
+            let data = sensors[index].data;
+            for (let dIndex = 0; dIndex < data.length; dIndex++) {
+                if(data[dIndex].type === 'TEMPERATURE') {
+                    let sensorDate = new Date(data[dIndex].timestamp);
+                    if ((new Date() - sensorDate) < 1000 * 60 * 60 * 4) {
+                        console.log("Use sensor for roof temp: " + +data[dIndex].value);
+                        return +data[dIndex].value;
+                    }
+                }
+            }
+        }
+    }
+    console.log("Failed to fetch temp from sensor %j", sensors);
+    return null;
+}
+
+var startNV = function () {
+    telldus.turnOn(11, function(err) {
+        console.log('NV is now on');
+    });
+    telldus.turnOff(12, function(err) {
+        console.log('SO is now off');
+    });
+}
+
+var startSO = function () {
+    telldus.turnOn(12, function(err) {
+        console.log('SO is now on');
+    });
+    telldus.turnOff(11, function(err) {
+        console.log('NV is now off');
+    });
 }
