@@ -18,12 +18,12 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
     let direction = getVal(now, 'wd');
     let roofTemp = extractRoofTemp(temp);
 
-    if (roofTemp < 0.5 || (!roofTemp && temp < 2)) {
+    if ((roofTemp && roofTemp < 0.5) || (!roofTemp && temp < 1.5)) {
         console.log('Decision: To cold - allow no fan');
     } else if (direction >= 0 && direction < 225) {
         console.log('Decision: N, NO, O, SO, S - allow NV fan');
         startNV();
-    } else if (direction <= 225) {
+    } else if (direction >= 225) {
         console.log('Decision: SV, V, NV  - allow SO fan');
         startSO();
     } else {
@@ -42,13 +42,13 @@ var getVal = function (parameters, name) {
         return e.name === name;
     }).values[0];
     console.log('Current ' + name + ': %j', val);
-    return val;
+    return +val;
 }
 
 var extractRoofTemp = function () {
     let sensors = telldus.getSensorsSync();
     for (let index = 0; index < sensors.length; index++) {
-        if (sensors[index].id === 104) {
+        if (sensors[index].model === '1A2D') {
             let data = sensors[index].data;
             for (let dIndex = 0; dIndex < data.length; dIndex++) {
                 if(data[dIndex].type === 'TEMPERATURE') {
