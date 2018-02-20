@@ -38,7 +38,6 @@ var calcAbsHumidity = function(temperature, relativeHumidity) {
     if (temperature === null || relativeHumidity === null) {
         return null;
     }
-    console.log('about to ' + temperature + ' ' + relativeHumidity);
     let maxHumidity = ((0.000002 * Math.pow(temperature, 4.0)) +
                         (0.0002 * Math.pow(temperature, 3.0)) +
                         (0.0095 * Math.pow(temperature, 2.0)) +
@@ -52,8 +51,8 @@ var calcAbsHumidity = function(temperature, relativeHumidity) {
 **/
 
 let entrance = extractSensor('temperaturehumidity', 11);
-let basement = extractSensor('temperaturehumidity', -999);
+let basement = extractSensor('temperaturehumidity', 13);
 let roof = extractSensor('1A2D', null);
-let outside = extractSensor('outside', null);
+let outside = extractSensor('temperaturehumidity', 135);
 
 console.log(new Date().toISOString() + ';' + roof + outside + entrance + basement);
