@@ -50,8 +50,8 @@ var calcAbsHumidity = function(temperature, relativeHumidity) {
 * Main function
 **/
 
-let entrance = extractSensor('temperaturehumidity', 11);
-let basement = extractSensor('temperaturehumidity', 13);
+let entrance = extractSensor('temperaturehumidity', 183);
+let basement = extractSensor('temperaturehumidity', 199);
 let roof = extractSensor('1A2D', null);
 let outside = extractSensor('temperaturehumidity', 135);
 
