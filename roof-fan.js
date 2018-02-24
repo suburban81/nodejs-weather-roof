@@ -1,6 +1,7 @@
 const telldus = require('telldus');
 const https = require('https');
 
+console.log('--- About to run: ' + new Date().toISOString() + ' ---');
 https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/15.7416/lat/56.1223/data.json', (resp) => {
   let data = '';
 
@@ -9,7 +10,6 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
   });
 
   resp.on('end', () => {
-    console.log('--- About to run: ' + new Date().toISOString() + ' ---');
     let json = JSON.parse(data);
     let now = json.timeSeries[0].parameters;
 
@@ -18,7 +18,7 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
     let direction = getVal(now, 'wd');
     let roofTemp = extractRoofTemp(temp);
 
-    if ((roofTemp && roofTemp < -3) || (!roofTemp && temp < 0)) {
+    if ((roofTemp && roofTemp < -4) || (!roofTemp && temp < 2)) {
         console.log('Decision: To cold - allow no fan');
     } else if (direction >= 0 && direction < 225) {
         console.log('Decision: N, NO, O, SO, S - allow NV fan');
