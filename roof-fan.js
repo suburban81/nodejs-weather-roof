@@ -18,12 +18,12 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
     let direction = getVal(now, 'wd');
     let roofTemp = extractRoofTemp(temp);
 
-    if ((roofTemp && roofTemp < -4) || (!roofTemp && temp < 2)) {
+    if ((roofTemp && roofTemp < -6) || (!roofTemp && temp < -5)) {
         console.log('Decision: To cold - allow no fan');
-    } else if (direction >= 0 && direction < 225) {
+    } else if (direction >= 20 && direction < 225) {
         console.log('Decision: N, NO, O, SO, S - allow NV fan');
         startNV();
-    } else if (direction >= 225) {
+    } else if (direction >= 225 || direction < 20) {
         console.log('Decision: SV, V, NV  - allow SO fan');
         startSO();
     } else {
