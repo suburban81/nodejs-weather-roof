@@ -27,7 +27,10 @@ var extractSensor = function(model, id) {
             }
         }
     }
-    return nullOrString(temp) + nullOrString(humidity) + nullOrString(calcAbsHumidity(temp, humidity));
+    return nullOrString(temp)
+            + nullOrString(humidity)
+            + nullOrString(calcAbsHumidity(temp, humidity))
+            + nullOrString(calcDewPoint(temp, humidity));
 }
 
 var nullOrString = function(value) {
@@ -44,6 +47,14 @@ var calcAbsHumidity = function(temperature, relativeHumidity) {
                         (0.337 * temperature) + 4.9034);
     let abs = maxHumidity * (relativeHumidity / 100);
     return Math.round(abs * 100) / 100;
+}
+
+var calcDewPoint = function(t, h) {
+    let dewPoint = t - (14.55 + 0.114 * t)
+            * (1 - (0.01 * h)) - Math.pow(((2.5 + 0.007 * t)
+            * (1 - (0.01 * h))),3) - (15.9 + 0.117 * t)
+            * Math.pow((1 - (0.01 * h)), 14);
+    return Math.round(dewPoint * 100) / 100;
 }
 
 /**
