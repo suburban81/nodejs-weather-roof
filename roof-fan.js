@@ -14,17 +14,17 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
     let now = json.timeSeries[0].parameters;
 
     let temp = getVal(now, 't');
-    let strength = getVal(now, 'ws');
+    // let strength = getVal(now, 'ws');
     let direction = getVal(now, 'wd');
     let roofTemp = extractRoofTemp(temp);
 
+    console.log("SMHI-temp: %j SMHI-direction: %j Roof-sensor: %j", temp, direction, roofTemp);
+
     if ((roofTemp && roofTemp < -6) || (!roofTemp && temp < -5)) {
-        console.log('Decision: To cold - allow no fan');
+        console.log('To cold - allow no fan');
     } else if (direction >= 20 && direction < 225) {
-        console.log('Decision: N, NO, O, SO, S - allow NV fan');
         startNV();
     } else if (direction >= 225 || direction < 20) {
-        console.log('Decision: SV, V, NV  - allow SO fan');
         startSO();
     } else {
         console.log('Error: fail to make decision');
@@ -41,7 +41,6 @@ var getVal = function (parameters, name) {
     let val = parameters.find(function(e) {
         return e.name === name;
     }).values[0];
-    console.log('Current ' + name + ': %j', val);
     return +val;
 }
 
@@ -54,7 +53,6 @@ var extractRoofTemp = function () {
                 if(data[dIndex].type === 'TEMPERATURE') {
                     let sensorDate = new Date(data[dIndex].timestamp);
                     if ((new Date() - sensorDate) < 1000 * 60 * 60 * 4) {
-                        console.log("Use sensor for roof temp: " + +data[dIndex].value);
                         return +data[dIndex].value;
                     }
                 }
@@ -67,18 +65,18 @@ var extractRoofTemp = function () {
 
 var startNV = function () {
     telldus.turnOn(11, function(err) {
-        console.log('NV is now on');
+        console.log('+ NV is now on');
     });
     telldus.turnOff(12, function(err) {
-        console.log('SO is now off');
+        console.log('- SO is now off');
     });
 }
 
 var startSO = function () {
     telldus.turnOn(12, function(err) {
-        console.log('SO is now on');
+        console.log('+ SO is now on');
     });
     telldus.turnOff(11, function(err) {
-        console.log('NV is now off');
+        console.log('- NV is now off');
     });
 }
