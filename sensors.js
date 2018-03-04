@@ -34,7 +34,7 @@ var extractSensor = function(model, id) {
 }
 
 var nullOrString = function(value) {
-    return (value === null ? '' : value) + ';';
+    return ',' + (value === null ? '' : value);
 }
 
 var calcAbsHumidity = function(temperature, relativeHumidity) {
@@ -62,8 +62,9 @@ var calcDewPoint = function(t, h) {
 **/
 
 let entrance = extractSensor('temperaturehumidity', 183);
-let basement = extractSensor('temperaturehumidity', 199);
-let roof = extractSensor('1A2D', null);
+let basement = extractSensor('temperaturehumidity', 13);
+let roof = extractSensor('temperaturehumidity', 199);
+//let roof = extractSensor('1A2D', null);
 let outside = extractSensor('temperaturehumidity', 135);
 
-console.log(new Date().toISOString() + ';' + roof + outside + entrance + basement);
+console.log(new Date().toISOString() + roof + outside + entrance + basement);
