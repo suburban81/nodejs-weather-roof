@@ -48,7 +48,7 @@ var getVal = function (parameters, name) {
 var extractRoofTemp = function () {
     let sensors = telldus.getSensorsSync();
     for (let index = 0; index < sensors.length; index++) {
-        if (sensors[index].model === '1A2D') {
+        if (sensors[index].model === 'temperaturehumidity' && sensors[index].id === 199) {
             let data = sensors[index].data;
             for (let dIndex = 0; dIndex < data.length; dIndex++) {
                 if(data[dIndex].type === 'TEMPERATURE') {
