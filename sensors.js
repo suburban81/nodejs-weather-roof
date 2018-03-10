@@ -50,6 +50,9 @@ var calcAbsHumidity = function(temperature, relativeHumidity) {
 }
 
 var calcDewPoint = function(t, h) {
+    if (t === null || h === null) {
+        return null;
+    }
     let dewPoint = t - (14.55 + 0.114 * t)
             * (1 - (0.01 * h)) - Math.pow(((2.5 + 0.007 * t)
             * (1 - (0.01 * h))),3) - (15.9 + 0.117 * t)
@@ -62,9 +65,9 @@ var calcDewPoint = function(t, h) {
 **/
 
 let entrance = extractSensor('temperaturehumidity', 183);
-let basement = extractSensor('temperaturehumidity', 13);
+//let basement = extractSensor('temperaturehumidity', 13); - gammal sensor
+let basement = extractSensor('1A2D', null);
 let roof = extractSensor('temperaturehumidity', 199);
-//let roof = extractSensor('1A2D', null);
 let outside = extractSensor('temperaturehumidity', 135);
 
 console.log(new Date().toISOString() + roof + outside + entrance + basement);
