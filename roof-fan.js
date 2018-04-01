@@ -22,9 +22,9 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
 
     if ((roofTemp && roofTemp < -6) || (!roofTemp && temp < -5)) {
         console.log('To cold - allow no fan');
-    } else if (direction >= 20 && direction < 225) {
+    } else if (direction >= 40 && direction < 225) {
         startNV();
-    } else if (direction >= 225 || direction < 20) {
+    } else if (direction >= 225 || direction < 40) {
         startSO();
     } else {
         console.log('Error: fail to make decision');
