@@ -2,6 +2,10 @@ const telldus = require('telldus');
 const https = require('https');
 
 console.log('--- About to run: ' + new Date().toISOString() + ' ---');
+
+// Should fix certs instead...
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
 https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/version/2/geotype/point/lon/15.7416/lat/56.1223/data.json', (resp) => {
   let data = '';
 
@@ -34,7 +38,8 @@ https.get('https://opendata-download-metanalys.smhi.se/api/category/mesan1g/vers
   });
 
 }).on("error", (err) => {
-  console.log("Error: failed to load SMHI data: " + err.message);
+  console.log("Error: failed to load SMHI data");
+  console.error(err);
 });
 
 var getVal = function (parameters, name) {
